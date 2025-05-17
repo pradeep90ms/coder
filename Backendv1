@@ -1,0 +1,37 @@
+// server.js (Express backend)
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const app = express();
+const PORT = 3001;
+
+// Dummy database (can be replaced with MongoDB/PostgreSQL)
+let bookings = [];
+
+app.use(cors());
+app.use(bodyParser.json());
+
+app.post('/api/book-ambulance', (req, res) => {
+  const { name, phone, location, emergencyType } = req.body;
+  if (!name || !phone || !location || !emergencyType) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const newBooking = {
+    id: Date.now(),
+    name,
+    phone,
+    location,
+    emergencyType,
+    status: 'Confirmed',
+  };
+
+  bookings.push(newBooking);
+  // Here, integrate SMS/email/push notification services if needed
+
+  return res.status(200).json({ message: 'Booking successful', booking: newBooking });
+});
+
+app.listen(PORT, () => {
+  console.log(`🚑 Ambulance booking server running on port ${PORT}`);
+});
